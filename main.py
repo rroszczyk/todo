@@ -11,6 +11,8 @@ logger = logging.getLogger()
 handler = graypy.GELFTLSHandler('dione', 12201)
 logger.addHandler(handler)
 
+logger.setLevel(logging.DEBUG)
+
 api = fastapi.FastAPI()
 
 @api.get("/")
@@ -39,6 +41,8 @@ def calculate(x: int, y: int, z: Optional[int] = None):
 
     if z is not None:
         z = z ** 2
+
+    logger.info("Wykonane zostały obliczenia w metodzie calculate")
 
     return {
         'x': x,
