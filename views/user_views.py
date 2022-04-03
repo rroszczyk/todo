@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from fastapi import APIRouter, HTTPException
@@ -9,6 +10,7 @@ from db import get_db
 from schemas.user_schemas import UserSchema, UserCreateSchema
 
 user_router = APIRouter()
+logger = logging.getLogger()
 
 @user_router.get("", response_model=List[UserSchema])
 def users(db: Session = Depends(get_db)):
@@ -35,7 +37,9 @@ def sign_up(user_data: UserCreateSchema, db: Session = Depends(get_db)):
     Funkcja tworząca użytkownika w systemie bazodanowym
     '''
     user = user_crud.get_user_by_email(db, user_data.email)
+    logger.info("Sprawdzenie czy użytkownik istnieje w bazie")
     if user:
         raise HTTPException(status_code=409, detail="adres email istnieje w bazie")
     new_user = user_crud.add_user(db, user_data)
+    logger.info("Utworzenie nowego użytkownika")
     return new_user

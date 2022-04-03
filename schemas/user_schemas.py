@@ -8,10 +8,10 @@ class UserSchema(UserBase):
     last_name: str
 
     class Config:
-        orm_mod = True
+        orm_mode = True
 
 class UserCreateSchema(UserSchema):
     password: str
 
     class Config:
-        orm_mod = True
+        orm_mode = True
