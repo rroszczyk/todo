@@ -8,6 +8,8 @@ import logging
 import graypy
 
 # uruchomienie i konfiguracja logera z użyciem graylog
+from views.user_views import user_router
+
 logger = logging.getLogger()
 
 handler = graypy.GELFTLSHandler('dione', 12201)
@@ -38,7 +40,9 @@ def custom_openapi():
 api = fastapi.FastAPI()
 api.openapi = custom_openapi
 
-api.router.prefix = "/api/v1"
+api.include_router(user_router, prefix="/users")
+
+# api.router.prefix = "/api/v1"
 
 @api.get("/")
 def index():
