@@ -8,7 +8,9 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from crud import user_crud
+from crud.user_crud import get_current_user
 from db import get_db
+from models import UserModel
 from schemas.token_schemas import TokenSchema
 from schemas.user_schemas import UserSchema, UserCreateSchema
 from utils.security import authenticate_user, create_token
@@ -62,4 +64,6 @@ def login(db: Session = Depends(get_db), form: OAuth2PasswordRequestForm = Depen
 
     return {'access_token': token, 'token_type': 'bearer'}
 
-#def get_current_user(user: UserModel = Depends)
+@user_router.get("info", response_model=UserSchema)
+def get_current_user(user: UserModel = Depends(get_current_user)):
+    return user
