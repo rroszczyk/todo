@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi.params import Depends
 from sqlalchemy.orm import Session
 
@@ -34,4 +34,8 @@ def sign_up(user_data: UserCreateSchema, db: Session = Depends(get_db)):
     '''
     Funkcja tworząca użytkownika w systemie bazodanowym
     '''
-    pass
+    user = user_crud.get_user_by_email(db, user_data.email)
+    if user:
+        raise HTTPException(status_code=409, detail="adres email istnieje w bazie")
+    new_user = user_crud.add_user(db, user_data)
+    return new_user
