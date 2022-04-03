@@ -8,6 +8,7 @@ import logging
 import graypy
 
 # uruchomienie i konfiguracja logera z użyciem graylog
+from views.todo_views import todo_router
 from views.user_views import user_router
 
 logger = logging.getLogger()
@@ -41,6 +42,7 @@ api = fastapi.FastAPI()
 api.openapi = custom_openapi
 
 api.include_router(user_router, prefix="/users")
+api.include_router(todo_router, prefix="/todo")
 
 # api.router.prefix = "/api/v1"
 
