@@ -1,19 +1,44 @@
 from typing import Optional
 
 import fastapi
+from fastapi.openapi.utils import get_openapi
 import uvicorn
 
 import logging
 import graypy
 
+# uruchomienie i konfiguracja logera z użyciem graylog
 logger = logging.getLogger()
 
 handler = graypy.GELFTLSHandler('dione', 12201)
-logger.addHandler(handler)
 
+logger.addHandler(handler)
 logger.setLevel(logging.DEBUG)
 
+def custom_openapi():
+    '''
+    Konfiguracja openAPI (www.swager.io)
+    '''
+    if api.openapi_schema:
+        return api.openapi_schema
+
+    openapi_schema = get_openapi(
+        title="Nasza aplikacja TODO",
+        version="1.0.0",
+        description="To będzie API dla aplikacji TODO",
+        routes=api.routes,
+    )
+    openapi_schema["info"]["x-logo"] = {
+        "url": "https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png"
+    }
+    api.openapi_schema = openapi_schema
+    return api.openapi_schema
+
+# uruchomienie i konfiguracja silnika api
 api = fastapi.FastAPI()
+api.openapi = custom_openapi
+
+api.router.prefix = "/api/v1"
 
 @api.get("/")
 def index():
@@ -31,6 +56,9 @@ def index():
 
 @api.get("/calculate")
 def calculate(x: int, y: int, z: Optional[int] = None):
+    '''
+    Kalkulator liczący wynik z dzielenia x przez y
+    '''
     try:
         value = x / y
     except ZeroDivisionError:
