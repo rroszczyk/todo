@@ -4,13 +4,8 @@ from sqlalchemy.orm import Session
 
 from models import UserModel
 from schemas.user_schemas import UserCreateSchema, UserSchema
+from utils.security import hash_password
 
-from passlib.context import CryptContext
-
-crypt_context = CryptContext(schemes=['bcrypt'])
-
-def hash_password(password: str) -> str:
-    return crypt_context.hash(password)
 
 def get_all_users(db: Session) -> List[UserModel]:
     return db.query(UserModel).filter().all()

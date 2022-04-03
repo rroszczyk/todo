@@ -3,11 +3,15 @@ from typing import List
 
 from fastapi import APIRouter, HTTPException
 from fastapi.params import Depends
+from fastapi.security import OAuth2PasswordRequestForm
+
 from sqlalchemy.orm import Session
 
 from crud import user_crud
 from db import get_db
+from schemas.token_schemas import TokenSchema
 from schemas.user_schemas import UserSchema, UserCreateSchema
+from utils.security import authenticate_user, create_token
 
 user_router = APIRouter()
 logger = logging.getLogger()
@@ -43,3 +47,19 @@ def sign_up(user_data: UserCreateSchema, db: Session = Depends(get_db)):
     new_user = user_crud.add_user(db, user_data)
     logger.info("Utworzenie nowego użytkownika")
     return new_user
+
+@user_router.post("/login", response_model=TokenSchema)
+def login(db: Session = Depends(get_db), form: OAuth2PasswordRequestForm = Depends()):
+    user = authenticate_user(db, form.username, form.password)
+    if not user:
+        raise HTTPException(
+            401,
+            detail="błędna nazwa użytkownika lub hasło",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    token = create_token(payload={'sub': user.email})
+
+    return {'access_token': token, 'token_type': 'bearer'}
+
+#def get_current_user(user: UserModel = Depends)
