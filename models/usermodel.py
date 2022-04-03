@@ -1,6 +1,6 @@
 from db import Base
-
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
 
 class UserModel(Base):
     __tablename__ = "users"
@@ -9,4 +9,5 @@ class UserModel(Base):
     last_name = Column(String)
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
+    todos = relationship("TodoModel", back_populates="owner", cascade="all, delete-orphan")
 
